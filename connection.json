@@ -1,0 +1,9 @@
+{
+  "account"            : "ACCOUNT-IDENTIFIER",
+  "user"               : "USERNAME",
+  "password"           : "PASSWORD",
+  "role"               : "ACCOUNTADMIN",
+  "warehouse"          : "COMPUTE_WH",
+  "database"           : "INSURANCE",
+  "schema"             : "ML_PIPE"
+}
