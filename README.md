@@ -2,7 +2,7 @@
 
 This repo contains the code to build the pipeline described in this Medium article: link
 
-It is assumed that you have some exposure to Snowflake and that your environment is set up to work with Snowpark for Python. 
+It is assumed that you have some exposure to Snowflake and that your environment is set up to work with Snowpark for Python. If you need help, look here! https://docs.snowflake.com/en/developer-guide/snowpark/python/setup
 
 The code helps to create this pipeline, excluding the data coming in from Snowpipe Streaming.
 
