@@ -1,5 +1,5 @@
 -- Create the table that we will use as our source of truth to train on
-create or replace TABLE INSURANCE.ML_PIPE.SOURCE_OF_TRUTH (
+CREATE or REPLACE TABLE INSURANCE.ML_PIPE.SOURCE_OF_TRUTH (
 	AGE NUMBER(38,0),
 	GENDER VARCHAR(16777216),
 	BMI FLOAT,
@@ -14,37 +14,10 @@ create or replace TABLE INSURANCE.ML_PIPE.SOURCE_OF_TRUTH (
 	COVERAGE_LEVEL VARCHAR(16777216)
 );
 
--- Insert only 10,000 rows. That way, we can save the rest for inference. As if they were new records
--- coming in from a streaming source, such as a website or forms. 
-INSERT INTO INSURANCE.ML_PIPE.SOURCE_OF_TRUTH (
-    AGE ,
-	GENDER,
-	BMI,
-	CHARGES ,
-	CHILDREN,
-	SMOKER,
-	REGION,
-	MEDICAL_HISTORY ,
-	FAMILY_MEDICAL_HISTORY,
-	EXERCISE_FREQUENCY ,
-	OCCUPATION ,
-	COVERAGE_LEVEL
-) SELECT AGE ,
-	GENDER,
-	BMI,
-	CHARGES ,
-	CHILDREN,
-	SMOKER,
-	REGION,
-	MEDICAL_HISTORY ,
-	FAMILY_MEDICAL_HISTORY,
-	EXERCISE_FREQUENCY ,
-	OCCUPATION ,
-	COVERAGE_LEVEL
-FROM PUBLIC.INSURANCE_DATASET limit 10000; -- PUBLIC.INSURANCE_DATASET is a table that I loaded with the insurance dataset csv from kaggle. 
+-- I insert 10k rows into the SOURCE_OF_TRUTH table in the data_load.ipynb file. This serves as the data to train the model.
 
--- Create table that will hold the testing observations (potentially could be streamed in)
-create or replace TABLE INSURANCE.ML_PIPE.INCOMING_DATA_SOURCE (
+-- Create table that will hold the remaining 990k records to be inserted into the landing table, simulating streamed-in data.
+CREATE or REPLACE TABLE INSURANCE.ML_PIPE.INCOMING_DATA_SOURCE (
 	AGE NUMBER(38,0),
 	GENDER VARCHAR(16777216),
 	BMI FLOAT,
@@ -58,15 +31,14 @@ create or replace TABLE INSURANCE.ML_PIPE.INCOMING_DATA_SOURCE (
 	OCCUPATION VARCHAR(16777216),
 	COVERAGE_LEVEL VARCHAR(16777216)
 );
--- I loaded this table through Snowpark such that it has the remaining 990k 
--- rows of the original insurance dataset. 
+-- Again, I loaded this table through Snowpark in the data_load.ipynb file.
 
 -- Create a stage to hold the SPROCs
 CREATE STAGE ML_PIPE_STAGE;
 
 
 -- Create the landing table (where streamed-in records could land)
-create or replace TABLE INSURANCE.ML_PIPE.LANDING_TABLE (
+CREATE or REPLACE TABLE INSURANCE.ML_PIPE.LANDING_TABLE (
 	AGE NUMBER(38,0),
 	GENDER VARCHAR(16777216),
 	BMI FLOAT,
@@ -116,8 +88,6 @@ LIMIT 100; -- Change this number to test prediction speed at different quantitie
 
 -- View the inserted records in the stream, along with the added metadata columns
 SELECT * FROM STREAM_ON_LANDING;
-
-
 
 -- Create a gold table for the records and their predictions to land
 CREATE OR REPLACE TABLE INSURANCE_GOLD(
