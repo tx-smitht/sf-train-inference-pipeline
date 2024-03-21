@@ -1,6 +1,6 @@
 # sf-train-inference-pipeline
 
-This repo contains the code to build the pipeline described in this Medium article: link
+This repo contains the code to build the pipeline described in this Medium article: https://medium.com/@thomasw-smith/automated-training-and-inference-pipeline-in-snowflake-w-model-registry-7fefd76636c2
 
 It is assumed that you have some exposure to Snowflake and that your environment is set up to work with Snowpark for Python. If you need help, look here! https://docs.snowflake.com/en/developer-guide/snowpark/python/setup
 
