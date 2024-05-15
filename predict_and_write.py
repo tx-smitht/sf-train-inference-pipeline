@@ -23,8 +23,7 @@ from snowflake.ml.modeling.metrics import mean_absolute_percentage_error, mean_s
 
 # Create a session
 connection_parameters = json.load(open('./connection.json'))
-#session = Session.builder.configs(connection_parameters).create()
-session = session
+session = Session.builder.configs(connection_parameters).create()
 session.use_database('INSURANCE')
 session.use_schema('ML_PIPE')
 session.use_warehouse('COMPUTE_WH')
