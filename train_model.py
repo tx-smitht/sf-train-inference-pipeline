@@ -28,6 +28,7 @@ session.use_database('INSURANCE')
 session.use_schema('ML_PIPE')
 session.use_warehouse('COMPUTE_WH')
 
+# Before running, make sure @ML_PIPE_STAGE exists (SQL File)
 # Create the sproc that creates and fits the pipeline based on the table passed
 @sproc(name='train_save_ins_model', stage_location='@ML_PIPE_STAGE', is_permanent=True, replace=True, packages=["snowflake-snowpark-python",'snowflake-ml-python', 'xgboost','pandas'])
 def train_save_ins_model(session: Session, source_of_truth: str, major_version: bool = True) -> str:
