@@ -22,7 +22,7 @@ from snowflake.ml.modeling.model_selection import GridSearchCV
 from snowflake.ml.modeling.metrics import mean_absolute_percentage_error, mean_squared_error
 
 # Create a session
-connection_parameters = json.load(open('../connection.json'))
+connection_parameters = json.load(open('./connection.json'))
 #session = Session.builder.configs(connection_parameters).create()
 session = session
 session.use_database('INSURANCE')
