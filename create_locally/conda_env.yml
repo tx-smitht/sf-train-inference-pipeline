@@ -16,3 +16,4 @@ dependencies:
   - matplotlib
   - snowflake-ml-python
   - kaggle
+  - snowflake-telemetry-python

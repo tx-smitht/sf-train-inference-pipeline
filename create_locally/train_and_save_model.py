@@ -105,8 +105,8 @@ def train_save_ins_model(session: Session, source_of_truth: str, major_version: 
                             #('mms', snowmlpp.MinMaxScaler(input_cols=cols_to_scale, output_cols=scale_cols_output)),
                             ('ohe', snowmlpp.OneHotEncoder(input_cols=cols_to_ohe, output_cols=ohe_cols_output, drop_input_cols=True)),
                             ('grid_search_reg', GridSearchCV(estimator=XGBRegressor(),
-                                                                param_grid={ "n_estimators":[50], # 25
-                                                                            "learning_rate":[0.4], # .5
+                                                                param_grid={ "n_estimators":[50, 100, 200], # 25
+                                                                            "learning_rate":[0.01, 0.1, 0.5 ], # .5
                                                                             },
                                                                 n_jobs = -1,
                                                                 scoring="neg_mean_absolute_percentage_error",
