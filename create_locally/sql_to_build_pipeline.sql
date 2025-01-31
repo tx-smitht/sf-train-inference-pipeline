@@ -17,8 +17,6 @@ CREATE or REPLACE TABLE INSURANCE.ML_PIPE.SOURCE_OF_TRUTH (
 	COVERAGE_LEVEL VARCHAR(16777216)
 );
 
--- * Run the data load notebook either locally or in snowflake. It inserts 10k rows into the SOURCE_OF_TRUTH table. This serves as the data to train the model.
-
 -- Create table that will hold the remaining 990k records to be inserted into the landing table, simulating streamed-in data.
 CREATE or REPLACE TABLE INSURANCE.ML_PIPE.INCOMING_DATA_SOURCE (
 	AGE NUMBER(38,0),
@@ -34,7 +32,8 @@ CREATE or REPLACE TABLE INSURANCE.ML_PIPE.INCOMING_DATA_SOURCE (
 	OCCUPATION VARCHAR(16777216),
 	COVERAGE_LEVEL VARCHAR(16777216)
 );
--- Again, I loaded this table through Snowpark in the load_data.ipynb file.
+
+-- * Run the data_load.ipynb notebook locally. It inserts 10k rows into the SOURCE_OF_TRUTH table and 990k rows into the INCOMING_DATA_SOURCE table. * --
 
 -- Create a stage to hold the SPROCs
 CREATE STAGE ML_PIPE_STAGE;
