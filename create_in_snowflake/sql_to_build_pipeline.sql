@@ -35,17 +35,14 @@ CREATE or REPLACE TABLE INSURANCE.ML_PIPE.INCOMING_DATA_SOURCE (
 
 -- * Run the data_load.ipynb notebook in Snowflake. In it, we load our full dataset into Snowflake then insert 10k rows into the SOURCE_OF_TRUTH table and 990k rows into the INCOMING_DATA_SOURCE table. * --
 
--- Create a stage to hold the SPROCs
-CREATE STAGE ML_PIPE_STAGE;
-
--- * Run the train_model.py file before moving on. This will create the training sproc. * --
+-- * Run the train_model.sql file before moving on. This will create the training sproc. * --
 
 CREATE OR REPLACE EVENT TABLE INSURANCE.ML_PIPE.MODEL_TRACES;
 ALTER ACCOUNT SET EVENT_TABLE = INSURANCE.ML_PIPE.MODEL_TRACES;
 
 -- Create the task that calls the training sproc
 CREATE or REPLACE TASK TRAIN_SAVE_TASK
-  WAREHOUSE = ML_WAREHOUSE -- Replace with your warehouse
+  WAREHOUSE = COMPUTE_WH -- Replace with your warehouse
   SCHEDULE = '11520 MINUTE' -- Executes every 8 days 
   AS
     CALL TRAIN_SAVE_INS_MODEL('SOURCE_OF_TRUTH',FALSE);
@@ -55,10 +52,6 @@ ALTER TASK TRAIN_SAVE_TASK RESUME;
 
 -- Execute immediately so that you have a trained model in registry
 EXECUTE TASK TRAIN_SAVE_TASK;
-
-use warehouse ml_warehouse;
-call train_save_ins_model_cloud('SOURCE_OF_TRUTH',FALSE);
-USE WAREHOUSE COMPUTE_WH;
 
 -- Create the landing table (where streamed-in records could land)
 CREATE or REPLACE TABLE INSURANCE.ML_PIPE.LANDING_TABLE (
@@ -128,17 +121,18 @@ INSERT INTO LANDING_TABLE(
 	OCCUPATION ,
 	COVERAGE_LEVEL
 FROM INCOMING_DATA_SOURCE
-LIMIT 500000; -- Change this number to test prediction speed at different quantities
+LIMIT 000; -- Change this number to test prediction speed at different quantities
+
+-- View the inserted records in the landing table
+SELECT * FROM LANDING_TABLE limit 100;
 
 -- View the inserted records in the stream, along with the added metadata columns
 SELECT * FROM STREAM_ON_LANDING;
 
--- * Run the predict_and_write.py file here. This will create the prediction/write to gold sproc * --
+-- * Run the predict_and_write.sql file here. This will create the prediction/write to gold sproc * --
 
 -- Call the prediction SPROC to see it work on the data you loaded into the stream.
-USE WAREHOUSE ML_WAREHOUSE;
 CALL PREDICT_WRITE_TO_GOLD();
-USE WAREHOUSE COMPUTE_WH;
 
 -- Testing the capacity to update records that already exist in the gold table
 update landing_table set coverage_level = 'STANDARD'
