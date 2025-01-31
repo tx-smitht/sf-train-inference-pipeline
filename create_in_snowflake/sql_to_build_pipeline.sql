@@ -1,6 +1,7 @@
 CREATE DATABASE INSURANCE;
 CREATE SCHEMA ML_PIPE;
 
+
 -- Create the table that we will use as our source of truth to train on
 CREATE or REPLACE TABLE INSURANCE.ML_PIPE.SOURCE_OF_TRUTH (
 	AGE NUMBER(38,0),
@@ -17,7 +18,7 @@ CREATE or REPLACE TABLE INSURANCE.ML_PIPE.SOURCE_OF_TRUTH (
 	COVERAGE_LEVEL VARCHAR(16777216)
 );
 
--- I insert 10k rows into the SOURCE_OF_TRUTH table in the data_load.ipynb file. This serves as the data to train the model.
+-- * Run the data load notebook either locally or in snowflake. It inserts 10k rows into the SOURCE_OF_TRUTH table. This serves as the data to train the model.
 
 -- Create table that will hold the remaining 990k records to be inserted into the landing table, simulating streamed-in data.
 CREATE or REPLACE TABLE INSURANCE.ML_PIPE.INCOMING_DATA_SOURCE (
@@ -39,7 +40,8 @@ CREATE or REPLACE TABLE INSURANCE.ML_PIPE.INCOMING_DATA_SOURCE (
 -- Create a stage to hold the SPROCs
 CREATE STAGE ML_PIPE_STAGE;
 
--- Run the train_model.py file before moving on. This will create the training sproc.
+-- * Run the train_model.py file before moving on. This will create the training sproc. * --
+
 CREATE OR REPLACE EVENT TABLE INSURANCE.ML_PIPE.MODEL_TRACES;
 ALTER ACCOUNT SET EVENT_TABLE = INSURANCE.ML_PIPE.MODEL_TRACES;
 
@@ -55,6 +57,10 @@ ALTER TASK TRAIN_SAVE_TASK RESUME;
 
 -- Execute immediately so that you have a trained model in registry
 EXECUTE TASK TRAIN_SAVE_TASK;
+
+use warehouse ml_warehouse;
+call train_save_ins_model_cloud('SOURCE_OF_TRUTH',FALSE);
+USE WAREHOUSE COMPUTE_WH;
 
 -- Create the landing table (where streamed-in records could land)
 CREATE or REPLACE TABLE INSURANCE.ML_PIPE.LANDING_TABLE (
@@ -124,15 +130,17 @@ INSERT INTO LANDING_TABLE(
 	OCCUPATION ,
 	COVERAGE_LEVEL
 FROM INCOMING_DATA_SOURCE
-LIMIT 100; -- Change this number to test prediction speed at different quantities
+LIMIT 500000; -- Change this number to test prediction speed at different quantities
 
 -- View the inserted records in the stream, along with the added metadata columns
 SELECT * FROM STREAM_ON_LANDING;
 
--- Run the predict_and_write.py file here. This will create the prediction/write to gold sproc
+-- * Run the predict_and_write.py file here. This will create the prediction/write to gold sproc * --
 
 -- Call the prediction SPROC to see it work on the data you loaded into the stream.
+USE WAREHOUSE ML_WAREHOUSE;
 CALL PREDICT_WRITE_TO_GOLD();
+USE WAREHOUSE COMPUTE_WH;
 
 -- Testing the capacity to update records that already exist in the gold table
 update landing_table set coverage_level = 'STANDARD'
@@ -159,4 +167,6 @@ ALTER TASK PREDICT_WRITE_TASK RESUME;
 -- Clean up
 ALTER TASK PREDICT_WRITE_TASK SUSPEND;
 ALTER TASK TRAIN_SAVE_TASK SUSPEND;
---DROP DATABASE INSURANCE;
+
+-- -- Clean up
+-- DROP DATABASE INSURANCE;
