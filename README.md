@@ -2,7 +2,11 @@
 
 This repo contains the code to build the pipeline described in this [Medium article](https://medium.com/@thomasw-smith/automated-training-and-inference-pipeline-in-snowflake-w-model-registry-7fefd76636c2): 
 
-It is assumed that you have some exposure to Snowflake and that your environment is set up to work with Snowpark for Python. If you need help, look [here](https://docs.snowflake.com/en/developer-guide/snowpark/python/setup)! I suggest creating a conda environment based on the conda_env.yml file I've borrowed from the [Snowflake's Snowpark ML Quickstart](https://github.com/Snowflake-Labs/sfguide-intro-to-machine-learning-with-snowpark-ml-for-python/tree/main).
+It is assumed that you have some exposure to Snowflake and machine learning. 
+
+The "create_in_snowflake" folder contains all the code necessary to create the pipeline completely using the Snowflake UI. 
+
+If you'd like to run the code locally, you can use the code in "create_locally". Ensure that your environment is set up to work with Snowpark for Python. If you need help, look [here](https://docs.snowflake.com/en/developer-guide/snowpark/python/setup)! I suggest creating a conda environment based on the conda_env.yml file I've borrowed from the [Snowflake's Snowpark ML Quickstart](https://github.com/Snowflake-Labs/sfguide-intro-to-machine-learning-with-snowpark-ml-for-python/tree/main).
 
 The code helps to create this pipeline, excluding the data coming in from Snowpipe Streaming.
 
